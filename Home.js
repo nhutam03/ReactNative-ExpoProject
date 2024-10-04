@@ -1,39 +1,43 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
-import {Mail, ArrowRight} from 'lucide-react'
+import { Mail, ArrowRight } from 'lucide-react'
 import { useNavigation } from '@react-navigation/native';
 
 
 export default function Home() {
   const navigation = useNavigation();
   return (
-    <View style = {styles.container}>
-      <View style = {styles.imgHeader}>
+    <View style={styles.container}>
+      <View style={styles.imgHeader}>
         <Image source={require('./img/image.png')} style={styles.img} />
       </View>
-      <View style = {styles.view}>
+      <View style={styles.view}>
         <Text style={styles.title}>
           MANAGE YOUR {"\n"} TASK
         </Text>
       </View>
-      <View style = {styles.email}>
-        <Mail />
-        <TextInput 
-        style={styles.emailInput} 
-        placeholder="Enter your name" 
-        placeholderTextColor="#bfbfbf" 
-      />
+      <View style={styles.view}>
+        <View style={styles.email}>
+          <Mail />
+          <TextInput
+            style={styles.emailInput}
+            placeholder="Enter your name"
+            placeholderTextColor="#bfbfbf"
+          />
+        </View>
       </View>
-      <View style = {{flex:1,
-      flexDirection:'row', 
-      alignItems:'center',
-      justifyContent:'space-around'
+
+      <View style={{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around'
       }}>
-        <TouchableOpacity style = {styles.btn} 
-        onPress={() => navigation.navigate('InforScreen')}
-        > 
-          <Text style = {styles.text}>GET STARTED </Text>
-          <ArrowRight color='#fff'/>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}
+          onPress={() => navigation.navigate('InforScreen')}
+        >
+          <Text style={styles.text}>GET STARTED </Text>
+          <ArrowRight color='#fff' />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -46,18 +50,18 @@ const styles = StyleSheet.create({
     alignContent: 'center'
   },
   imgHeader: {
-    flex:1, 
+    flex: 1,
     alignItems: 'center',
-     justifyContent: 'center'
+    justifyContent: 'center'
   },
   img: {
-    height:100,
-     width:100,
+    height: 100,
+    width: 100,
   },
   text: {
-   fontWeight:'bold',
-   textAlign: "center",
-   color: 'white',
+    fontWeight: 'bold',
+    textAlign: "center",
+    color: 'white',
   },
   title: {
     fontWeight: 'bold',
@@ -71,13 +75,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 200,
-    height:50,
+    height: 50,
     borderRadius: 20,
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
   view: {
-    flex:1, 
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
