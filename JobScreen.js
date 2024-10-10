@@ -1,10 +1,12 @@
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
-import { ClipboardCheck, ArrowLeft, ArrowRight, Search, PencilLine, CirclePlus, Album } from 'lucide-react';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
+import { ArrowLeft, ArrowRight, Album } from 'lucide-react';
 import { useNavigation } from '@react-navigation/native';
 
 const JobScreen = ({ route }) => {
     const navigation = useNavigation();
     const { userName } = route.params;
+    const { task } = useState();
     const [jobInput, setJobInput] = useState('');
 
     const handleFinish = () => {
@@ -15,26 +17,34 @@ const JobScreen = ({ route }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View>
+                <View >
                     <Text style={styles.greeting}>Hi {userName}</Text>
                     <Text style={styles.subGreeting}>Have a great day ahead</Text>
                 </View>
-                <ArrowRight />
+                <TouchableOpacity onPress={() => { navigation.goBack() }}><ArrowLeft /></TouchableOpacity>
             </View>
-            <Text style={styles.title}>ADD YOUR JOB</Text>
-            <Album />
-            <TextInput
-                style={styles.input}
-                placeholder="input your job"
-                value={jobInput}
-                onChangeText={setJobInput}
-            />
-            <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
-                <Text style={styles.finishButtonText}>FINISH </Text><ArrowLeft />
-            </TouchableOpacity>
-            <View style={styles.noteContainer}>
-                <Text style={styles.note}>The task is to be done...</Text>
+            <View style={styles.titleArea}>
+                <Text style={styles.title}>ADD YOUR JOB</Text>
             </View>
+            <View style={styles.view}>
+                <View style={styles.inputArea}>
+                    <Album />
+                    <TextInput
+                        style={styles.jobInput}
+                        placeholder="Enter your job"
+                        placeholderTextColor="#bfbfbf"
+                        value={task}
+                        onChangeText={setJobInput} />
+                </View>
+            </View>
+            <View style={styles.footer}>
+                <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
+                    <Text style={styles.finishButtonText}>FINISH </Text>
+                    <ArrowRight color='white' />
+                </TouchableOpacity>
+                <Image source={require('./img/image.png')} style={styles.image} />
+            </View>
+
         </View>
     );
 };
@@ -44,8 +54,13 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+    },
+    header: {
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        flexDirection: 'row',
+        marginBottom: 20
     },
     greeting: {
         fontSize: 20,
@@ -53,39 +68,64 @@ const styles = StyleSheet.create({
     },
     subGreeting: {
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginVertical: 20,
     },
-    input: {
+    titleArea: {
+        alignContent: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    view: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputArea: {
+        borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        width: '100%',
-        marginBottom: 20,
+        borderColor: '#cac6cf',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 400,
+        paddingHorizontal: 10,
+        backgroundColor: '#fff',
+    },
+    jobInput: {
+        flex: 1,
+        height: 40,
+        backgroundColor: '#fff',
+        paddingHorizontal: 15,
+        fontSize: 16,
+        color: '#000',
     },
     finishButton: {
         padding: 10,
-        backgroundColor: '#007bff',
+        backgroundColor: '#87ceeb',
         borderRadius: 5,
         alignItems: 'center',
-        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     finishButtonText: {
         color: '#fff',
         fontSize: 16,
+        marginRight: 5,
     },
-    noteContainer: {
-        marginTop: 20,
-        alignItems: 'center',
+    image: {
+        width: 150,
+        height: 150,
+        alignSelf: 'center',
+        marginTop: 40
     },
-    note: {
-        fontSize: 16,
-        color: 'gray',
-    },
+    footer: {
+        flex: 2,
+        flexDirection: 'column',
+        marginBottom: 20
+    }
 });
 export default JobScreen;

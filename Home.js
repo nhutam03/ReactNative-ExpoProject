@@ -29,8 +29,7 @@ const Home = () => {
             placeholder="Enter your name"
             placeholderTextColor="#bfbfbf"
             value={name}
-            onChangeText={setName}
-          />
+            onChangeText={setName} />
         </View>
       </View>
 
