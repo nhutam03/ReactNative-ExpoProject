@@ -1,65 +1,73 @@
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
-import { ClipboardCheck, ArrowLeft, Search, PencilLine, CirclePlus } from 'lucide-react'
+import { ClipboardCheck, ArrowLeft, Search, PencilLine, CirclePlus } from 'lucide-react';
 import { useNavigation } from '@react-navigation/native';
 
-const InforScreen = () => {
+const InforScreen = ({ route }) => {
     const navigation = useNavigation();
-    const tasks = [
-        { id: '1', title: 'To check email' },
-        { id: '2', title: 'UI task web page' },
-        { id: '3', title: 'Learn javascript basic' },
-        { id: '4', title: 'Learn HTML Advance' },
-        { id: '5', title: 'Medical App U' },
-        { id: '6', title: 'Learn Java' },
-    ];
+    const { userName } = route.params;
+    const [tasks, setTasks] = useState([]);
+    const handleGetStarted = () => {
+        navigation.navigate('JobScreen', { userName: userName });
+    }
+
+    const fetchTasks = async () => {
+        try {
+            const response = await fetch('https://6707fbff8e86a8d9e42db17a.mockapi.io/api/v1/tasks');
+            const data = await response.json();
+            setTasks(data);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
     const renderItem = ({ item }) => (
         <View style={styles.taskContainer}>
             <ClipboardCheck color='green' />
-            <Text style={styles.completedTask}>{item.title}</Text>
+            <Text style={styles.completedTask}>{item.name}</Text>
             <TouchableOpacity style={styles.editButton}>
                 <PencilLine size={14} color='red' />
             </TouchableOpacity>
         </View>
     );
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <ArrowLeft />
+            <View>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <ArrowLeft />
+                </TouchableOpacity>
                 <View>
-                    <Text style={styles.greeting}>Hi Twinkle</Text>
+                    <Text style={styles.greeting}>Hi {userName}</Text>
                     <Text style={styles.subGreeting}>Have a great day ahead</Text>
                 </View>
             </View>
-
             <View style={styles.searchBar}>
-                <Search />
+                <Search style={styles.icon} />
                 <TextInput style={styles.searchArea} placeholder="Search" />
             </View>
-
             <FlatList
                 data={tasks}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
             />
-            <TouchableOpacity style={styles.addButton}
-                onPress={() => navigation.navigate('JobScreen')}
-            >
-                <CirclePlus size={50} color='blue' />
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.addButton} onPress={handleGetStarted}>
+                    <CirclePlus color='white' size={50} />
+                </TouchableOpacity>
+            </View>
         </View>
-    )
+    );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-    },
-    header: {
-        flex: 1,
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        marginBottom: 20,
     },
     greeting: {
         fontSize: 20,
@@ -70,49 +78,51 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     searchBar: {
-        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
         borderWidth: 1,
         borderColor: '#cac6cf',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        borderRadius: 8,
         padding: 10,
-        marginBottom: 20,
         backgroundColor: '#fff',
+        marginBottom: 20,
     },
-    searchArea: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 15,
+    icon: {
+        marginRight: 10,
     },
     taskContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10,
-        backgroundColor: '#cccacf',
-        borderRadius: 20,
-        marginBottom: 10,
         padding: 10,
+        backgroundColor: '#d9dbdf',
+        marginBottom: 10,
+        borderRadius: 20
     },
     completedTask: {
         fontSize: 16,
-        fontWeight: 'bold',
+        color: 'gray',
     },
     editButton: {
         padding: 5,
         backgroundColor: '#e0e0e0',
         borderRadius: 5,
     },
-    addButton: {
-        marginTop: 20,
-        padding: 10,
-        borderRadius: 100,
-        width: 70,
-        height: 130,
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         alignItems: 'center',
+        marginBottom: 20,
     },
-})
+    addButton: {
+        backgroundColor: '#87ceeb',
+        borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 70,
+        height: 70,
+        elevation: 2,
+    },
+});
+
 export default InforScreen;

@@ -1,10 +1,16 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { Mail, ArrowRight } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function Home() {
+const Home = () => {
   const navigation = useNavigation();
+  const [name, setName] = useState();
+
+  const handleGetStarted = () => {
+    navigation.navigate('InforScreen', { userName: name });
+  }
   return (
     <View style={styles.container}>
       <View style={styles.imgHeader}>
@@ -22,6 +28,8 @@ export default function Home() {
             style={styles.emailInput}
             placeholder="Enter your name"
             placeholderTextColor="#bfbfbf"
+            value={name}
+            onChangeText={setName}
           />
         </View>
       </View>
@@ -33,7 +41,7 @@ export default function Home() {
         justifyContent: 'space-around'
       }}>
         <TouchableOpacity style={styles.btn}
-          onPress={() => navigation.navigate('InforScreen')}
+          onPress={handleGetStarted}
         >
           <Text style={styles.text}>GET STARTED </Text>
           <ArrowRight color='#fff' />
@@ -105,3 +113,4 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+export default Home;
