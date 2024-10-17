@@ -2,17 +2,29 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
 import { ArrowLeft, ArrowRight, Album } from 'lucide-react';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+
 
 const JobScreen = ({ route }) => {
     const navigation = useNavigation();
     const { userName } = route.params;
-    const { task } = useState();
-    const [jobInput, setJobInput] = useState('');
+    const [title, setJob] = useState('');
 
+    //them data vao api
+    const postData = () => {
+        axios.post('https://6707fbff8e86a8d9e42db17a.mockapi.io/api/v1/tasks', {
+            title,
+        }).then(() => {
+            navigation.navigate('InforScreen', { userName: userName });
+        })
+            .catch(error => {
+                console.error('Error adding job:', error);
+            });
+    }
     const handleFinish = () => {
-        console.log('Job added:', jobInput);
-        setJobInput('');
-    };
+        console.log("Job added: " + title);
+        postData();
+    }
 
     return (
         <View style={styles.container}>
@@ -28,20 +40,27 @@ const JobScreen = ({ route }) => {
             </View>
             <View style={styles.view}>
                 <View style={styles.inputArea}>
-                    <Album />
+                    <Album color='green' />
                     <TextInput
                         style={styles.jobInput}
                         placeholder="Enter your job"
                         placeholderTextColor="#bfbfbf"
-                        value={task}
-                        onChangeText={setJobInput} />
+                        value={title}
+                        onChangeText={setJob} />
                 </View>
             </View>
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
-                    <Text style={styles.finishButtonText}>FINISH </Text>
-                    <ArrowRight color='white' />
-                </TouchableOpacity>
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-around'
+                }}>
+                    <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
+                        <Text style={styles.finishButtonText}>FINISH </Text>
+                        <ArrowRight color='white' />
+                    </TouchableOpacity>
+                </View>
                 <Image source={require('./img/image.png')} style={styles.image} />
             </View>
 
@@ -60,7 +79,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         flexDirection: 'row',
-        marginBottom: 20
     },
     greeting: {
         fontSize: 20,
@@ -104,12 +122,15 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     finishButton: {
-        padding: 10,
+        fontWeight: 'bold',
         backgroundColor: '#87ceeb',
-        borderRadius: 5,
-        alignItems: 'center',
-        flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center',
+        width: 200,
+        height: 50,
+        borderRadius: 20,
+        flexDirection: 'row',
+        paddingHorizontal: 10,
     },
     finishButtonText: {
         color: '#fff',
@@ -117,15 +138,17 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     image: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
         alignSelf: 'center',
         marginTop: 40
     },
     footer: {
         flex: 2,
         flexDirection: 'column',
-        marginBottom: 20
+        marginBottom: 20,
+        justifyContent: 'center',
+        alignContent: 'center'
     }
 });
 export default JobScreen;
