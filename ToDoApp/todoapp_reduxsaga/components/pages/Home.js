@@ -1,0 +1,180 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, FlatList, Modal } from 'react-native';
+import { ClipboardCheck, ArrowLeft, Search, PencilLine, CirclePlus } from 'lucide-react';
+import { useNavigation, } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchJobsRequest, editJobRequest } from '../../redux/todoAction';
+
+const Home = ({ route }) => {
+  const navigation = useNavigation();
+  const { userName } = route.params;
+  const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.jobs.list);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+
+  useEffect(() => {
+    dispatch(fetchJobsRequest());
+  }, [dispatch]);
+
+  const handleEdit = (id, currentTitle) => {
+    setEditId(id);
+    setEditTitle(currentTitle);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    dispatch(editJobRequest({ id: editId, title: editTitle })); 
+    setIsEditing(false);
+    setEditId(null);
+    setEditTitle('');
+  };
+
+  const handleGetStarted = () => {
+    navigation.navigate('AddJob', { userName });
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.taskContainer}>
+      <ClipboardCheck color='green'></ClipboardCheck>
+      <Text style={styles.completedTask}>{item.title}</Text>
+      <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.id, item.title)}>
+        <PencilLine size={14} color='red'></PencilLine>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ArrowLeft></ArrowLeft>
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.greeting}>Hi {userName}</Text>
+          <Text style={styles.subGreeting}>Have a great day ahead</Text>
+        </View>
+      </View>
+      <View style={styles.searchBar}>
+        <Search style={styles.icon}/>
+        <TextInput placeholder="Search" />
+      </View>
+      <FlatList
+        data={tasks}
+        renderItem={renderItem}
+      />
+      <View style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.addButton} onPress={handleGetStarted}>
+        <CirclePlus color='white' size={50}></CirclePlus>
+      </TouchableOpacity>
+      </View>
+
+      <Modal visible={isEditing} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Job Title</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editTitle}
+              onChangeText={setEditTitle}
+            />
+            <TouchableOpacity onPress={handleSaveEdit} style={{backgroundColor:'blue', width: 50, justifyContent:'center'}}><Text>Save</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsEditing(false)} style={{backgroundColor:'red', width: 50, justifyContent:'center'}}><Text>Cancel</Text></TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  greeting: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  subGreeting: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#cac6cf',
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#fff',
+    marginBottom: 20, 
+  },
+  icon: {
+    marginRight: 10,
+  },
+  taskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#d9dbdf',
+    marginBottom: 10,
+    borderRadius: 20
+  },
+  completedTask: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  editButton: {
+    padding: 5,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+   addButton: {
+    backgroundColor: '#87ceeb', 
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70, 
+    height: 70, 
+    elevation: 2, 
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+});
+
+export default Home;
