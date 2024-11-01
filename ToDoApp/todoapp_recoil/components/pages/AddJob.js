@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, TextInput, Image } from 'reac
 import { ArrowLeft, ArrowRight, Album } from 'lucide-react';
 import { useSetRecoilState } from 'recoil';
 import { useNavigation } from '@react-navigation/native';
-import { addJobSelector } from '../../state/jobState';
+import { addJobSelector } from '../../state/jobsState';
 
 const AddJob = ({ route }) => {
   const navigation = useNavigation();

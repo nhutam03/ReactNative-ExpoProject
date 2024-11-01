@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, FlatList, Modal } from 'react-native';
-import { ClipboardCheck, ArrowLeft, Search, PencilLine, CirclePlus } from 'lucide-react';
+import { ClipboardCheck, ArrowLeft, Search, PencilLine, CirclePlus } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { jobsState, fetchJobsSelector, addJobSelector, editJobSelector, jobsLoadingState } from '../../state/jobState';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { jobListState, deleteJob, editJobSelector } from '../../state/jobsState';
 
-const Home = ({ route }) => {
-  const navigation = useNavigation();
+const RenderItem = ({ job, handleEdit }) => (
+  <View style={styles.taskContainer}>
+    <ClipboardCheck color="green" />
+    <Text style={styles.completedTask}>{job.title}</Text>
+    <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(job.id, job.title)}>
+      <PencilLine size={14} color="red" />
+    </TouchableOpacity>
+  </View>
+);
+export default function Home({ route, navigation }) {
   const { userName } = route.params;
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
 
-  const [jobs, setJobs] = useRecoilState(jobsState);
-  const fetchedJobs = useRecoilValue(fetchJobsSelector);
-  const setLoading = useSetRecoilState(jobsLoadingState);
-  const setAddJob = useSetRecoilState(addJobSelector);
-  const setEditJob = useSetRecoilState(editJobSelector);
+  
+  const jobs = useRecoilValue(jobListState);
 
-  // Sử dụng dữ liệu đã được fetch từ `fetchJobsSelector`
-  useEffect(() => {
-    setJobs(fetchedJobs);
-    setLoading(false);
-  }, [fetchedJobs, setJobs, setLoading]);
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleEdit = (id, currentTitle) => {
     setEditId(id);
@@ -32,25 +35,18 @@ const Home = ({ route }) => {
   };
 
   const handleSaveEdit = () => {
-    setEditJob(editId)(editTitle);
+    const setEditJob = useSetRecoilState(editJobSelector(editId));
+    setEditJob(editTitle); // gọi selector với editId và editTitle
     setIsEditing(false);
     setEditId(null);
     setEditTitle('');
   };
 
   const handleAddJob = () => {
-    setAddJob("New Job Title"); // Thêm công việc mới
+    navigation.navigate('AddJob', { userName });
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.taskContainer}>
-      <ClipboardCheck color="green" />
-      <Text style={styles.completedTask}>{item.title}</Text>
-      <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.id, item.title)}>
-        <PencilLine size={14} color="red" />
-      </TouchableOpacity>
-    </View>
-  );
+ 
 
   return (
     <View style={styles.container}>
@@ -65,15 +61,20 @@ const Home = ({ route }) => {
       </View>
       <View style={styles.searchBar}>
         <Search style={styles.icon} />
-        <TextInput 
-          placeholder="Search" 
-          value={searchQuery} 
-          onChangeText={setSearchQuery} 
+        <TextInput
+          placeholder="Search"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
       </View>
-      <FlatList
+      {/* <FlatList
         data={jobs.filter(job => job.title.includes(searchQuery))}
         renderItem={renderItem}
+      /> */}
+      <FlatList
+        data={filteredJobs}
+        renderItem={({ item }) => <renderItem job={item} handleEdit={handleEdit} />}
+        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.addButton} onPress={handleAddJob}>
@@ -90,8 +91,8 @@ const Home = ({ route }) => {
               value={editTitle}
               onChangeText={setEditTitle}
             />
-            <TouchableOpacity onPress={handleSaveEdit} style={{backgroundColor:'blue', width: 50, justifyContent:'center'}}><Text>Save</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsEditing(false)} style={{backgroundColor:'red', width: 50, justifyContent:'center'}}><Text>Cancel</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleSaveEdit} style={{ backgroundColor: 'blue', width: 50, justifyContent: 'center' }}><Text>Save</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsEditing(false)} style={{ backgroundColor: 'red', width: 50, justifyContent: 'center' }}><Text>Cancel</Text></TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     backgroundColor: '#fff',
-    marginBottom: 20, 
+    marginBottom: 20,
   },
   icon: {
     marginRight: 10,
@@ -151,13 +152,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   addButton: {
-    backgroundColor: '#87ceeb', 
+    backgroundColor: '#87ceeb',
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 70, 
-    height: 70, 
-    elevation: 2, 
+    width: 70,
+    height: 70,
+    elevation: 2,
   },
   modalContainer: {
     flex: 1,
@@ -184,5 +185,3 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
-export default Home;

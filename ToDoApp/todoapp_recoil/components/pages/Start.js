@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
-import {Mail, ArrowRight} from 'lucide-react'
-import React, { useState, useEffect } from 'react';
+import {Mail, ArrowRight} from 'lucide-react-native';
+import React, { useState} from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -23,7 +23,7 @@ const Start = () => {
       </View>
       <View style = {styles.view}>
         <View style = {styles.email}>
-          <Mail />
+          <Mail></Mail>
           <TextInput 
           style={styles.emailInput} 
           placeholder="Enter your name" 
@@ -42,7 +42,7 @@ const Start = () => {
         onPress={handleGetStarted}
         > 
           <Text style = {styles.text}>GET STARTED </Text>
-          <ArrowRight color='#fff'/>
+          <ArrowRight color='#fff'></ArrowRight>
           </TouchableOpacity>
       </View>
     </View>
